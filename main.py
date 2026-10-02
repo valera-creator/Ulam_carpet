@@ -28,6 +28,9 @@ def bypass_matrix(n):
     matrix = [[0 for _ in range(n)] for _ in range(n)]
     curr_row, curr_col = get_index_row_col(n)
 
+    if n < 1:
+        return []
+
     matrix[curr_row][curr_col] = num
 
     while True:
@@ -71,13 +74,24 @@ def check_simple_num(num):
     return True
 
 
-def draw(n, matrix):
+def eratosthenes(n):
+    limit = n * n
+    is_prime = [True] * (limit + 1)
+    is_prime[0] = is_prime[1] = False
+    for p in range(2, int(limit ** 0.5) + 1):
+        if is_prime[p]:
+            for multiple in range(p * p, limit + 1, p):
+                is_prime[multiple] = False
+    return is_prime
+
+
+def draw(n, matrix, is_simples_num):
     root = tk.Tk()
     width = root.winfo_screenwidth()
     height = root.winfo_screenheight()
     root.title("Ковёр Улама")
 
-    canvas = tk.Canvas(root, width=width, height=height, bg="white")
+    canvas = tk.Canvas(root, width=width, height=height, bg="black")
 
     k = min(width, height) // (n * 1.25)  # шаг сетки
     half = k // 2  # половина стороны квадрата в пикселях
@@ -88,11 +102,11 @@ def draw(n, matrix):
             x = int(width / 2 + (j - center) * k)
             y = int(height / 2 + (i - center) * k)
 
-            if check_simple_num(matrix[i][j]):
+            if is_simples_num[matrix[i][j]]:
                 canvas.create_rectangle(
                     x - half, y - half,
                     x + half, y + half,
-                    fill="black", outline=""
+                    fill="blue", outline=""
                 )
 
     canvas.pack()
@@ -100,10 +114,11 @@ def draw(n, matrix):
 
 
 def main():
-    n = 322
+    n = 422
     matrix = bypass_matrix(n)
     # print_matrix(matrix)
-    draw(n, matrix)
+    is_simples_num = eratosthenes(n)
+    draw(n, matrix, is_simples_num)
 
 
 if __name__ == "__main__":
